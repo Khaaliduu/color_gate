@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/app_colors.dart';
 import '../gameplay/providers/progress_controller.dart';
+import '../gameplay/screens/how_to_play_screen.dart';
 import '../../shared/widgets/screen_shell.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key, required this.progress});
-
   final ProgressController progress;
+  Future<void> _whatsapp() async {
+    final uri = Uri.parse(
+      'https://wa.me/?text=${Uri.encodeComponent('Hello, I am playing COLOR GATE!')}',
+    );
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
 
   @override
   Widget build(BuildContext context) => ScreenShell(
@@ -39,12 +49,39 @@ class SettingsScreen extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         const Text(
-          'LANGUAGE',
+          'HELP & SUPPORT',
           style: TextStyle(color: AppColors.lilac, fontWeight: FontWeight.w900),
         ),
-        const ListTile(
-          title: Text('English'),
-          subtitle: Text('More languages can be added later'),
+        Card(
+          color: AppColors.surface,
+          child: ListTile(
+            leading: const Icon(Icons.help_outline, color: AppColors.mint),
+            title: const Text('How to Play'),
+            subtitle: const Text('Learn how to drag and match'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const HowToPlayScreen()),
+            ),
+          ),
+        ),
+        Card(
+          color: AppColors.surface,
+          child: ListTile(
+            leading: const Icon(Icons.chat, color: AppColors.mint),
+            title: const Text('WhatsApp'),
+            subtitle: const Text('Share or contact through WhatsApp'),
+            onTap: _whatsapp,
+          ),
+        ),
+        Card(
+          color: AppColors.surface,
+          child: ListTile(
+            leading: const Icon(Icons.share, color: AppColors.mint),
+            title: const Text('Share COLOR GATE'),
+            subtitle: const Text('Invite friends to play'),
+            onTap: () => Share.share('COLOR GATE – Think, Match, Escape!'),
+          ),
         ),
         const SizedBox(height: 10),
         const Text(
@@ -53,12 +90,11 @@ class SettingsScreen extends StatelessWidget {
         ),
         const ListTile(
           title: Text('COLOR GATE'),
-          subtitle: Text('Version 1.0.0'),
+          subtitle: Text('Version 1.1.0'),
         ),
       ],
     ),
   );
-
   Widget _toggle(
     String title,
     String subtitle,
